@@ -1,2 +1,2 @@
 # chat_app
-Flutter chating app
+Flutter chatting app
