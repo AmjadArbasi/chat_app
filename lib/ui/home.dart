@@ -18,7 +18,7 @@ class Home extends StatelessWidget {
       body: Column(
         children: [
           _ChatContacts(users: users),
-          _ChatMessage(messages: messages, users: users),
+          Expanded(child: _ChatMessage(messages: messages, users: users)),
         ],
       ),
     );
@@ -37,6 +37,7 @@ class _ChatMessage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CusttomContainer(
+      height: MediaQuery.of(context).size.height * 0.70,
       child: Padding(
         padding: const EdgeInsets.only(top: 8.0, right: 8.0),
         child: ListView.builder(
@@ -47,6 +48,10 @@ class _ChatMessage extends StatelessWidget {
                 .first;
 
             List<Chat> chats = Chat.chats;
+
+            chats[index].messages.sort(
+                  (a, b) => b.createdAt.compareTo(a.createdAt),
+                );
 
             return ListTile(
               onTap: () {
@@ -94,7 +99,7 @@ class _ChatContacts extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.height * 0.13,
+      height: MediaQuery.of(context).size.height * 0.12,
       margin: EdgeInsets.symmetric(horizontal: 20, vertical: 14),
       child: ListView.builder(
         scrollDirection: Axis.horizontal,

@@ -1,4 +1,5 @@
 import 'package:chat_app/models/models.dart';
+import 'package:chat_app/widgets/custom_container.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
@@ -10,99 +11,39 @@ class ChatScreen extends StatefulWidget {
 }
 
 class _ChatScreenState extends State<ChatScreen> {
+  late TextEditingController textEditingController;
   late User user;
   late Chat chat;
-  late String text;
+  String text = "";
 
   @override
   void initState() {
     user = Get.arguments[0];
     chat = Get.arguments[1];
+    textEditingController = TextEditingController();
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    textEditingController.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: _CustomAppBar(user: user),
-      body: Container(
+      body: CusttomContainer(
         height: MediaQuery.of(context).size.height,
-        width: double.infinity,
-        margin: const EdgeInsets.only(top: 20),
-        decoration: const BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.only(
-            topLeft: Radius.circular(35),
-            topRight: Radius.circular(35),
-          ),
-        ),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Expanded(
-              child: ListView.builder(
-                reverse: true,
-                itemCount: chat.messages.length,
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                itemBuilder: (context, index) {
-                  bool isSender = chat.messages[index].senderId == "1";
-                  return Align(
-                    alignment:
-                        isSender ? Alignment.centerRight : Alignment.centerLeft,
-                    child: Column(
-                      crossAxisAlignment: isSender
-                          ? CrossAxisAlignment.end
-                          : CrossAxisAlignment.start,
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.only(
-                            right: 15,
-                            left: 15,
-                          ),
-                          padding: const EdgeInsets.all(15),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(20),
-                            color: isSender
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.secondary,
-                          ),
-                          child: Text(
-                            chat.messages[index].text,
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ),
-                        Container(
-                          margin: const EdgeInsets.only(
-                            top: 4.0,
-                            right: 20,
-                            left: 20,
-                            bottom: 10.0,
-                          ),
-                          child: Text(
-                            "${chat.messages[index].createdAt.hour}:${chat.messages[index].createdAt.minute}",
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodySmall!
-                                .copyWith(
-                                    color: Theme.of(context)
-                                        .colorScheme
-                                        .onBackground),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
+            _ChatMessages(chat: chat),
             Container(
-              margin: const EdgeInsets.only(
-                bottom: 20,
-                right: 20,
-                left: 20,
-              ),
+              margin: const EdgeInsets.all(15),
               child: TextFormField(
+                controller: textEditingController,
                 onChanged: (value) {
                   setState(() {
                     text = value;
@@ -114,7 +55,8 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
                 decoration: InputDecoration(
                   filled: true,
-                  fillColor: Colors.grey[200],
+                  fillColor:
+                      Get.isDarkMode ? Colors.grey[800] : Colors.grey[200],
                   hintText: "Type Message",
                   hintStyle: Theme.of(context).textTheme.bodySmall,
                   border: OutlineInputBorder(
@@ -126,25 +68,75 @@ class _ChatScreenState extends State<ChatScreen> {
                     onPressed: () {
                       debugPrint(text);
                       Message message = Message(
-                          senderId: "1",
-                          receiverId: "2",
-                          text: text,
-                          createdAt: DateTime.now());
+                        senderId: "1",
+                        receiverId: "2",
+                        text: text,
+                        createdAt: DateTime.now(),
+                      );
 
                       List<Message> messages = List.from(chat.messages)
                         ..add(message);
-
+                      messages.sort(
+                        (a, b) => b.createdAt.compareTo(a.createdAt),
+                      );
                       setState(() {
                         chat = chat.copyWith(messages: messages);
                       });
+                      text = "";
+                      textEditingController.clear();
                     },
-                    icon: const Icon(Icons.send),
+                    icon: Icon(
+                      Icons.send,
+                      color: Get.isDarkMode
+                          ? Colors.white
+                          : Theme.of(context).colorScheme.onBackground,
+                    ),
                   ),
                 ),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _ChatMessages extends StatelessWidget {
+  final Chat chat;
+  const _ChatMessages({required this.chat});
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: ListView.builder(
+        reverse: true,
+        itemCount: chat.messages.length,
+        itemBuilder: (BuildContext context, int index) {
+          bool isSender = chat.messages[index].senderId == "1";
+          return Align(
+            alignment: isSender ? Alignment.centerRight : Alignment.centerLeft,
+            child: Container(
+              margin: const EdgeInsets.symmetric(
+                horizontal: 15,
+                vertical: 2,
+              ),
+              padding: const EdgeInsets.all(15),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: isSender
+                    ? Theme.of(context).colorScheme.primary
+                    : Theme.of(context).colorScheme.secondary,
+              ),
+              child: Text(
+                chat.messages[index].text,
+                style: Theme.of(context).textTheme.titleSmall!.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+              ),
+            ),
+          );
+        },
       ),
     );
   }

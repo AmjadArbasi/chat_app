@@ -34,10 +34,10 @@ ThemeData darkTheme() {
       primary: const Color(0xFF6A5BC2),
       secondary: const Color(0xFF5BC297),
       surface: const Color(0xFF6A5BC2),
-      background: Colors.white,
-      onBackground: const Color(0xFF5B6CC2),
+      background: const Color.fromARGB(221, 35, 35, 35),
+      onBackground: Colors.black,
     ),
-    scaffoldBackgroundColor: const Color(0xFF6A5BC2),
+    scaffoldBackgroundColor: Colors.black,
     iconTheme: const IconThemeData(color: Colors.white),
     appBarTheme: const AppBarTheme(
       backgroundColor: Colors.transparent,
