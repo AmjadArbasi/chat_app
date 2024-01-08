@@ -35,7 +35,7 @@ ThemeData darkTheme() {
       secondary: const Color(0xFF5BC297),
       surface: const Color(0xFF6A5BC2),
       background: const Color.fromARGB(221, 35, 35, 35),
-      onBackground: Colors.black,
+      onBackground: Colors.white,
     ),
     scaffoldBackgroundColor: Colors.black,
     iconTheme: const IconThemeData(color: Colors.white),
