@@ -1,5 +1,5 @@
 # chat_app
-Flutter chatting app
+Flutter chatting app UI
 
 ## Light Mode 
 
